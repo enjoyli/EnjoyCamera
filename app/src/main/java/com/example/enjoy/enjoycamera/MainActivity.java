@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = data.getData();
             mVideoView.setVideoURI(uri);
 
-
         }
     }
 
