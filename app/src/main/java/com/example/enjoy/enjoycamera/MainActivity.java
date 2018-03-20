@@ -1,16 +1,23 @@
 package com.example.enjoy.enjoycamera;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.VideoView;
 
@@ -23,21 +30,28 @@ public class MainActivity extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_VIDEO_CAPTURE = 2;
+    static final int MY_PERMISSIONS_REQUEST_CAMERA = 3;
     String mCurrentPhotoPath;
     private ImageView mImageView = null;
     private Button mButton = null;
     private VideoView mVideoView = null;
+    private CameraPreview mCameraPreview = null;
+    private Camera mCamera = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
+        requestPermission();
     }
 
     private void initView(){
         mImageView = findViewById(R.id.imageView);
         mVideoView = findViewById(R.id.videoView);
         mButton = findViewById(R.id.button);
+        safeCameraOpen();
+        mCameraPreview = new CameraPreview(this,mCamera);
+        FrameLayout preview = findViewById(R.id.frameLayout);
+        preview.addView(mCameraPreview);
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,5 +136,52 @@ public class MainActivity extends AppCompatActivity {
         bmOptions.inPurgeable = true;
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
         mImageView.setImageBitmap(bitmap);
+    }
+
+
+    private boolean safeCameraOpen(){
+        boolean qOpened = false;
+        releaseCameraAndPreview();
+        mCamera = Camera.open();
+        qOpened = (mCamera!=null);
+
+        return qOpened;
+
+    }
+    private void releaseCameraAndPreview(){
+        //mCameraPreview.setCamera(null);
+        if(mCamera!=null){
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+
+    private void requestPermission(){
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.CAMERA)){
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        MY_PERMISSIONS_REQUEST_CAMERA);
+            }
+        }else {
+            initView();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case MY_PERMISSIONS_REQUEST_CAMERA:
+                if(grantResults.length>0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    initView();
+                }else {
+
+                }
+                return;
+        }
     }
 }
