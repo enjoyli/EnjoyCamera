@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private List<String> permissionsList = new ArrayList<String>();
     private permissionManager mPermissionManager;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
