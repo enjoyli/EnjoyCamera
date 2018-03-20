@@ -13,12 +13,12 @@ import java.util.List;
  * Created by admin on 2018/03/20   .
  */
 
-public class permissionManager {
+public class PermissionManager {
     public static final int REQUEST_PERMISSIONS = 100;
     private List<String> mPermissionsList = new ArrayList<String>();
     private Activity mActivity;
 
-    public permissionManager(Activity activity) {
+    public PermissionManager(Activity activity) {
         mActivity = activity;
 
         initPermissionsList();

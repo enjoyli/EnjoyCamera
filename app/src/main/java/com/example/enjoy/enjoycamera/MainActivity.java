@@ -19,7 +19,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.VideoView;
 
-import com.example.enjoy.enjoycamera.Utils.permissionManager;
+import com.example.enjoy.enjoycamera.Utils.PermissionManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,14 +38,14 @@ public class MainActivity extends AppCompatActivity {
     private Button mButton = null;
     private VideoView mVideoView = null;
     private List<String> permissionsList = new ArrayList<String>();
-    private permissionManager mPermissionManager;
+    private PermissionManager mPermissionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mPermissionManager = new permissionManager(this);
+        mPermissionManager = new PermissionManager(this);
         if(mPermissionManager.requestPermissions()){
             initView();
         }
@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode){
-            case permissionManager.REQUEST_PERMISSIONS:
+            case PermissionManager.REQUEST_PERMISSIONS:
                 if(grantResults.length>0 &&
                         grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     initView();

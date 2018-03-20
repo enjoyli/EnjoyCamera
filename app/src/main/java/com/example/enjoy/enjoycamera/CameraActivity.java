@@ -30,6 +30,7 @@ public class CameraActivity extends AppCompatActivity {
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 fos.write(bytes);
                 fos.close();
+                mCamera.startPreview();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
