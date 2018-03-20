@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,14 +16,17 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.VideoView;
+
+import com.example.enjoy.enjoycamera.Utils.permissionManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,31 +37,41 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mImageView = null;
     private Button mButton = null;
     private VideoView mVideoView = null;
-    private CameraPreview mCameraPreview = null;
-    private Camera mCamera = null;
+    private List<String> permissionsList = new ArrayList<String>();
+    private permissionManager mPermissionManager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        requestPermission();
+
+        mPermissionManager = new permissionManager(this);
+        if(mPermissionManager.requestPermissions()){
+            initView();
+        }
+        //requestPermission();
     }
 
     private void initView(){
         mImageView = findViewById(R.id.imageView);
         mVideoView = findViewById(R.id.videoView);
         mButton = findViewById(R.id.button);
-        safeCameraOpen();
-        mCameraPreview = new CameraPreview(this,mCamera);
-        FrameLayout preview = findViewById(R.id.frameLayout);
-        preview.addView(mCameraPreview);
-
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dispatchTakeVideoIntent();
+                //dispatchTakeVideoIntent();
+                //mCamera.takePicture(null,null,mPicture);
+                sendMessage();
             }
         });
     }
+
+    private void sendMessage(){
+        Intent intent = new Intent(this, CameraActivity.class);
+        startActivity(intent);
+    }
+
     private void dispatchTakePictureIntent(){
         Intent takePictureIntent  = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager())!=null) {
@@ -68,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
             if (photoFile!=null) {
                 String authority = getPackageName() + ".fileprovider";
                 Uri photoURI = FileProvider.getUriForFile(this,authority,photoFile);
-
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoURI);
             }
             startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE);
@@ -81,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(takeVideoIntent,REQUEST_VIDEO_CAPTURE);
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -138,25 +150,18 @@ public class MainActivity extends AppCompatActivity {
         mImageView.setImageBitmap(bitmap);
     }
 
+    private boolean addPermission(List<String> permissionsList,String permission){
+        if(ContextCompat.checkSelfPermission(this,permission)
+                != PackageManager.PERMISSION_GRANTED){
+            permissionsList.add(permission);
 
-    private boolean safeCameraOpen(){
-        boolean qOpened = false;
-        releaseCameraAndPreview();
-        mCamera = Camera.open();
-        qOpened = (mCamera!=null);
-
-        return qOpened;
-
-    }
-    private void releaseCameraAndPreview(){
-        //mCameraPreview.setCamera(null);
-        if(mCamera!=null){
-            mCamera.release();
-            mCamera = null;
+            return false;
         }
+        return true;
     }
-
     private void requestPermission(){
+        List<String> permissionsNeeded = new ArrayList<String>();
+
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.CAMERA)){
@@ -174,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode){
-            case MY_PERMISSIONS_REQUEST_CAMERA:
+            case permissionManager.REQUEST_PERMISSIONS:
                 if(grantResults.length>0 &&
                         grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     initView();
