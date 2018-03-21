@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
+import com.example.enjoy.enjoycamera.Utils.CameraManager;
 import com.example.enjoy.enjoycamera.Utils.FileUtils;
 
 import java.io.File;
@@ -15,10 +16,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class CameraActivity extends AppCompatActivity {
+    private static final String TAG = "CameraActivity";
+    private CameraManager mCameraManager = null;
     private Button mTakePictureBtn = null;
-
     private CameraPreview mCameraPreview = null;
     private Camera mCamera = null;
+    private Camera.Parameters mParameters = null;
+    private Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
+        @Override
+        public void onShutter() {
+
+        }
+    };
+
     private Camera.PictureCallback mPicture = new Camera.PictureCallback(){
         @Override
         public void onPictureTaken(byte[] bytes, Camera camera) {
@@ -39,17 +49,23 @@ public class CameraActivity extends AppCompatActivity {
 
         }
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_activity);
 
-        safeCameraOpen();
+        //afeCameraOpen();
+        init();
         initView();
     }
 
+    private void init(){
+        mCameraManager = new CameraManager();
+        mCamera = CameraManager.getCameraInstance();
+    }
     private void initView(){
-        mCameraPreview = new CameraPreview(this,mCamera);
+        mCameraPreview = new CameraPreview(this,mCamera, mCameraManager);
         FrameLayout preview = findViewById(R.id.fl_cameraPreview);
         preview.addView(mCameraPreview);
 
@@ -57,7 +73,8 @@ public class CameraActivity extends AppCompatActivity {
         mTakePictureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCamera.takePicture(null,null,mPicture);
+                mCameraManager.setPictureSize((double)16/9);
+                mCamera.takePicture(mShutterCallback,null,mPicture);
             }
         });
 
