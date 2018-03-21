@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_VIDEO_CAPTURE = 2;
@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     String mCurrentPhotoPath;
     private ImageView mImageView = null;
     private Button mButton = null;
+    private Button mTakePicByIntentBtn = null;
+    private Button mTakeVidByIntentBtn = null;
     private VideoView mVideoView = null;
     private List<String> permissionsList = new ArrayList<String>();
     private PermissionManager mPermissionManager;
@@ -56,14 +58,28 @@ public class MainActivity extends AppCompatActivity {
         mImageView = findViewById(R.id.imageView);
         mVideoView = findViewById(R.id.videoView);
         mButton = findViewById(R.id.button);
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //dispatchTakeVideoIntent();
-                //mCamera.takePicture(null,null,mPicture);
+        mButton.setOnClickListener(this);
+        mTakePicByIntentBtn = findViewById(R.id.takePicByIntentBtn);
+        mTakePicByIntentBtn.setOnClickListener(this);
+        mTakeVidByIntentBtn = findViewById(R.id.takeVidByIntentBtn);
+        mTakeVidByIntentBtn.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.button:
                 sendMessage();
-            }
-        });
+                break;
+            case R.id.takePicByIntentBtn:
+                dispatchTakePictureIntent();
+                break;
+            case R.id.takeVidByIntentBtn:
+                dispatchTakeVideoIntent();
+                break;
+                default:
+                    break;
+        }
     }
 
     private void sendMessage(){
@@ -95,15 +111,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
-/*            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap)extras.get("data");
-            mImageView.setImageBitmap(imageBitmap);*/
-            //setPic();
-            //galleryAddPic();
-            Uri uri = data.getData();
-            mVideoView.setVideoURI(uri);
-            mVideoView.start();
+        if (resultCode == RESULT_OK) {
+            switch(requestCode){
+                case REQUEST_IMAGE_CAPTURE:
+     /*               Bundle extras = data.getExtras();
+                    Bitmap imageBitmap = (Bitmap)extras.get("data");
+                    mImageView.setImageBitmap(imageBitmap);*/
+                    setPic();
+                    mImageView.setVisibility(View.VISIBLE);
+                    mVideoView.setVisibility(View.GONE);
+                    break;
+                case REQUEST_VIDEO_CAPTURE:
+                    Uri uri = data.getData();
+                    mVideoView.setVideoURI(uri);
+                    mVideoView.start();
+                    mImageView.setVisibility(View.INVISIBLE);
+                    mVideoView.setVisibility(View.VISIBLE);
+                    break;
+                    default:
+                        break;
+            }
         }
     }
 
