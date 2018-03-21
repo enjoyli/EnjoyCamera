@@ -7,7 +7,7 @@
     tools:context="com.example.enjoy.enjoycamera.MainActivity">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/iv_picture"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginBottom="104dp"
@@ -22,7 +22,7 @@
         app:srcCompat="@mipmap/ic_launcher_round" />
 
     <VideoView
-        android:id="@+id/videoView"
+        android:id="@+id/vv_video"
         android:layout_width="185dp"
         android:layout_height="397dp"
         android:layout_marginBottom="8dp"
@@ -30,14 +30,14 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/btn_takeByApi"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btn_takeByApi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -51,7 +51,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/takePicByIntentBtn"
+        android:id="@+id/btn_takePicByIntent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -59,11 +59,11 @@
         android:layout_marginStart="8dp"
         android:text="Pic By Intent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button"
+        app:layout_constraintEnd_toStartOf="@+id/btn_takeByApi"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/takeVidByIntentBtn"
+        android:id="@+id/btn_takeVidByIntent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -72,7 +72,7 @@
         android:text="VID By Intent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button" />
+        app:layout_constraintStart_toEndOf="@+id/btn_takeByApi" />
 
 
 </android.support.constraint.ConstraintLayout>

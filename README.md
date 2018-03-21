@@ -10,4 +10,6 @@ adb shell pm grant com.example.enjoy.enjoycamera android.permission.CAMERA
 
 runtime permission
 
+#Day 3
 
+调整不急以及修改命名

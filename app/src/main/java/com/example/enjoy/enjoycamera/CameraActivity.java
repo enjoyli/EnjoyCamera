@@ -42,7 +42,7 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
+        setContentView(R.layout.camera_activity);
 
         safeCameraOpen();
         initView();
@@ -50,10 +50,10 @@ public class CameraActivity extends AppCompatActivity {
 
     private void initView(){
         mCameraPreview = new CameraPreview(this,mCamera);
-        FrameLayout preview = findViewById(R.id.previewFL);
+        FrameLayout preview = findViewById(R.id.fl_cameraPreview);
         preview.addView(mCameraPreview);
 
-        mTakePictureBtn = findViewById(R.id.takePictureButton);
+        mTakePictureBtn = findViewById(R.id.btn_takePicture);
         mTakePictureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

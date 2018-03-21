@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity);
 
         mPermissionManager = new PermissionManager(this);
         if(mPermissionManager.requestPermissions()){
@@ -55,26 +55,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initView(){
-        mImageView = findViewById(R.id.imageView);
-        mVideoView = findViewById(R.id.videoView);
-        mButton = findViewById(R.id.button);
+        mImageView = findViewById(R.id.iv_picture);
+        mVideoView = findViewById(R.id.vv_video);
+        mButton = findViewById(R.id.btn_takeByApi);
         mButton.setOnClickListener(this);
-        mTakePicByIntentBtn = findViewById(R.id.takePicByIntentBtn);
+        mTakePicByIntentBtn = findViewById(R.id.btn_takePicByIntent);
         mTakePicByIntentBtn.setOnClickListener(this);
-        mTakeVidByIntentBtn = findViewById(R.id.takeVidByIntentBtn);
+        mTakeVidByIntentBtn = findViewById(R.id.btn_takeVidByIntent);
         mTakeVidByIntentBtn.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.button:
+            case R.id.btn_takeByApi:
                 sendMessage();
                 break;
-            case R.id.takePicByIntentBtn:
+            case R.id.btn_takePicByIntent:
                 dispatchTakePictureIntent();
                 break;
-            case R.id.takeVidByIntentBtn:
+            case R.id.btn_takeVidByIntent:
                 dispatchTakeVideoIntent();
                 break;
                 default:

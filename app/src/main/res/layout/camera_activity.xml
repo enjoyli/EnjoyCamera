@@ -8,7 +8,7 @@
     tools:layout_editor_absoluteY="50dp">
 
     <FrameLayout
-        android:id="@+id/previewFL"
+        android:id="@+id/fl_cameraPreview"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="50dp"
@@ -22,7 +22,7 @@
     </FrameLayout>
 
     <Button
-        android:id="@+id/takePictureButton"
+        android:id="@+id/btn_takePicture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -31,5 +31,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/previewFL" />
+        app:layout_constraintTop_toBottomOf="@+id/fl_cameraPreview" />
 </android.support.constraint.ConstraintLayout>
