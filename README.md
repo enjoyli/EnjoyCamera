@@ -13,3 +13,7 @@ runtime permission
 #Day 3
 
 调整布局以及修改命名
+
+#Day 4
+
+添加camera 设置项
