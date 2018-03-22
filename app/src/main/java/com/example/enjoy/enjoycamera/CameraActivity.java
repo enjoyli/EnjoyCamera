@@ -1,8 +1,12 @@
 package com.example.enjoy.enjoycamera;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -19,9 +23,11 @@ public class CameraActivity extends AppCompatActivity {
     private static final String TAG = "CameraActivity";
     private CameraManager mCameraManager = null;
     private Button mTakePictureBtn = null;
+    private Button mSettings = null;
     private CameraPreview mCameraPreview = null;
     private Camera mCamera = null;
     private Camera.Parameters mParameters = null;
+    private SharedPreferences preference;
     private Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
         @Override
         public void onShutter() {
@@ -63,23 +69,40 @@ public class CameraActivity extends AppCompatActivity {
     private void init(){
         mCameraManager = new CameraManager();
         mCamera = CameraManager.getCameraInstance();
+        preference = PreferenceManager.getDefaultSharedPreferences(this);
     }
     private void initView(){
         mCameraPreview = new CameraPreview(this,mCamera, mCameraManager);
         FrameLayout preview = findViewById(R.id.fl_cameraPreview);
         preview.addView(mCameraPreview);
-
+        mSettings = findViewById(R.id.btn_settings);
+        mSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gotoSetting();
+            }
+        });
         mTakePictureBtn = findViewById(R.id.btn_takePicture);
         mTakePictureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                boolean enable = preference.getBoolean("switch_preference_shutter_sound",false);
+                Log.d(TAG,"enable = "+enable);
                 mCameraManager.setPictureSize((double)16/9);
-                mCamera.takePicture(mShutterCallback,null,mPicture);
+                if(enable) {
+                    mCamera.takePicture(mShutterCallback, null, mPicture);
+                }else{
+                    mCamera.takePicture(null, null, mPicture);
+                }
             }
         });
 
     }
 
+    private void gotoSetting(){
+        Intent intent = new Intent(this,SettingActivity.class);
+        startActivity(intent);
+    }
     private boolean safeCameraOpen(){
         boolean qOpened = false;
         releaseCameraAndPreview();

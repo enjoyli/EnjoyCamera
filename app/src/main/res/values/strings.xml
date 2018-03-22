@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">Enjoy Camera</string>
     <string name="take_picture">Take Picture</string>
+    <string name="shutter_sound">Shutter Sound</string>
+    <string name="preview_size">Preview Size</string>
+    <string-array name="preview_size_title">
+        <item>16:9</item>
+        <item>4:3</item>
+    </string-array>
+    <string-array name="preview_size_value">
+        <item>1.7778</item>
+        <item>1.3333</item>
+    </string-array>
 </resources>
