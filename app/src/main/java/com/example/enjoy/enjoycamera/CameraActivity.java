@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.example.enjoy.enjoycamera.Utils.CameraManager;
+import com.example.enjoy.enjoycamera.Utils.CustomView;
 import com.example.enjoy.enjoycamera.Utils.FileUtils;
 
 import java.io.File;
@@ -26,8 +27,8 @@ public class CameraActivity extends AppCompatActivity {
     private Button mSettings = null;
     private CameraPreview mCameraPreview = null;
     private Camera mCamera = null;
-    private Camera.Parameters mParameters = null;
     private SharedPreferences preference;
+    private CustomView mGridLine;
     private Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
         @Override
         public void onShutter() {
@@ -66,15 +67,28 @@ public class CameraActivity extends AppCompatActivity {
         initView();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(preference.getBoolean("switch_preference_grid_line",false)){
+            mGridLine.setVisibility(View.VISIBLE);
+        }else{
+            mGridLine.setVisibility(View.INVISIBLE);
+        }
+    }
+
     private void init(){
         mCameraManager = new CameraManager();
         mCamera = CameraManager.getCameraInstance();
         preference = PreferenceManager.getDefaultSharedPreferences(this);
     }
     private void initView(){
+        Log.d(TAG,"initView");
         mCameraPreview = new CameraPreview(this,mCamera, mCameraManager);
         FrameLayout preview = findViewById(R.id.fl_cameraPreview);
         preview.addView(mCameraPreview);
+        mGridLine = new CustomView(this);
+        addContentView(mGridLine,new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
         mSettings = findViewById(R.id.btn_settings);
         mSettings.setOnClickListener(new View.OnClickListener() {
             @Override

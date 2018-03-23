@@ -20,6 +20,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private SurfaceHolder mHolder = null;
     private Camera.Parameters mParameters = null;
 
+
     public CameraPreview(Context context, Camera camera, CameraManager cameraManager) {
         super(context);
         this.mCamera = camera;
@@ -63,4 +64,5 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCamera.stopPreview();
         }
     }
+
 }
