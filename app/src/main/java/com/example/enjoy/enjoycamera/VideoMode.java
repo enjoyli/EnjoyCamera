@@ -19,8 +19,8 @@ public class VideoMode {
     private CameraPreview mCameraPreview = null;
 
     public VideoMode(Camera camera, CameraPreview cameraPreview) {
-        this.mCamera = mCamera;
-        this.mCameraPreview = mCameraPreview;
+        this.mCamera = camera;
+        this.mCameraPreview = cameraPreview;
     }
 
     public boolean prepareVideoRecorder(){
