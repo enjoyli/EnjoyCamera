@@ -17,3 +17,11 @@ runtime permission
 #Day 4
 
 添加camera 设置项
+
+#Day 5
+
+添加grid line
+
+#Day 6
+
+使用ViewPagerIndicator

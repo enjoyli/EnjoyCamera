@@ -1,26 +1,31 @@
 package com.example.enjoy.enjoycamera;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.example.enjoy.enjoycamera.Utils.CameraManager;
 import com.example.enjoy.enjoycamera.Utils.CustomView;
 import com.example.enjoy.enjoycamera.Utils.FileUtils;
+import com.viewpagerindicator.TabPageIndicator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends Activity {
     private static final String TAG = "CameraActivity";
     private CameraManager mCameraManager = null;
     private Button mTakePictureBtn = null;
@@ -29,13 +34,51 @@ public class CameraActivity extends AppCompatActivity {
     private Camera mCamera = null;
     private SharedPreferences preference;
     private CustomView mGridLine;
+    private static final String[] demo = new String[]{
+            "延时录像", "慢动作录像", "录像", "拍照", "背景虚化", "全景",
+            "专业相机", "扫码", "扫名片", "更多设置" };
     private Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
         @Override
         public void onShutter() {
 
         }
     };
+    private class MyAdapter extends PagerAdapter {
+        @Override
+        public int getCount() {
+            return demo.length;
+        }
 
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return demo[position];
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Button button = new Button(CameraActivity.this);
+            button.setText(demo[position]);
+            button.setGravity(Gravity.CENTER);
+            container.addView(button);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    gotoSetting();
+                }
+            });
+            return button;
+        }
+    }
     private Camera.PictureCallback mPicture = new Camera.PictureCallback(){
         @Override
         public void onPictureTaken(byte[] bytes, Camera camera) {
@@ -110,6 +153,13 @@ public class CameraActivity extends AppCompatActivity {
                 }
             }
         });
+
+        ViewPager viewPager = findViewById(R.id.pager);
+        MyAdapter myAdapter = new MyAdapter();
+        viewPager.setAdapter(myAdapter);
+
+        TabPageIndicator tabPageIndicator = findViewById(R.id.indicator);
+        tabPageIndicator.setViewPager(viewPager);
 
     }
 

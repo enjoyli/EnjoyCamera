@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,8 +35,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
         >
-        <activity android:name=".CameraActivity" />
-        <activity android:name=".SettingActivity"></activity>
+        <activity android:name=".CameraActivity"
+            android:theme="@style/Theme.PageIndicatorDefaults"/>
+        <activity android:name=".SettingActivity" />
+        <activity android:name=".TabActivity"></activity>
     </application>
 
 </manifest>
