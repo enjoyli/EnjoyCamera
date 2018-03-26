@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import com.example.enjoy.enjoycamera.Utils.CameraManager;
 import com.example.enjoy.enjoycamera.Utils.CustomView;
 import com.example.enjoy.enjoycamera.Utils.FileUtils;
+import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.TabPageIndicator;
 
 import java.io.File;
@@ -28,6 +29,7 @@ import java.io.IOException;
 public class CameraActivity extends Activity {
     private static final String TAG = "CameraActivity";
     private CameraManager mCameraManager = null;
+    private VideoMode mVideoMode = null;
     private Button mTakePictureBtn = null;
     private Button mSettings = null;
     private CameraPreview mCameraPreview = null;
@@ -37,13 +39,16 @@ public class CameraActivity extends Activity {
     private static final String[] demo = new String[]{
             "延时录像", "慢动作录像", "录像", "拍照", "背景虚化", "全景",
             "专业相机", "扫码", "扫名片", "更多设置" };
+    private static final int[] ICONS = new int[] {
+            R.mipmap.ic_launcher,
+    };
     private Camera.ShutterCallback mShutterCallback = new Camera.ShutterCallback() {
         @Override
         public void onShutter() {
 
         }
     };
-    private class MyAdapter extends PagerAdapter {
+    private class MyAdapter extends PagerAdapter implements IconPagerAdapter{
         @Override
         public int getCount() {
             return demo.length;
@@ -52,6 +57,11 @@ public class CameraActivity extends Activity {
         @Override
         public boolean isViewFromObject(View view, Object object) {
             return view == object;
+        }
+
+        @Override
+        public int getIconResId(int index) {
+            return 0;//ICONS[0]
         }
 
         @Override
@@ -73,7 +83,15 @@ public class CameraActivity extends Activity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    gotoSetting();
+                    if(mVideoMode.getRecorderState()){
+                        mVideoMode.stopVideoRecorder();
+                    }else {
+                        if(mVideoMode.prepareVideoRecorder()){
+                            mVideoMode.startVideoRecorder();
+                        }else {
+                            mVideoMode.releaseMediaRecorder();
+                        }
+                    }
                 }
             });
             return button;
@@ -128,6 +146,7 @@ public class CameraActivity extends Activity {
     private void initView(){
         Log.d(TAG,"initView");
         mCameraPreview = new CameraPreview(this,mCamera, mCameraManager);
+        mVideoMode = new VideoMode(mCamera,mCameraPreview);
         FrameLayout preview = findViewById(R.id.fl_cameraPreview);
         preview.addView(mCameraPreview);
         mGridLine = new CustomView(this);

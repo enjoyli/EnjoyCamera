@@ -17,6 +17,7 @@ public class CameraManager {
     public CameraManager() {
     }
 
+
     public static Camera getCameraInstance(){
         if (mCamera == null){
             mCamera = Camera.open();
