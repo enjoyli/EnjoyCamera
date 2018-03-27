@@ -2,10 +2,8 @@ package com.example.enjoy.enjoycamera;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.example.enjoy.enjoycamera.Utils.CameraManager;
 import com.viewpagerindicator.IconPagerAdapter;
@@ -56,7 +54,7 @@ public class MyAdapter extends PagerAdapter implements IconPagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        Button button = new Button(mContext);
+ /*       Button button = new Button(mContext);
         button.setText(CONTENT[position]);
         button.setGravity(Gravity.CENTER);
         container.addView(button);
@@ -66,6 +64,7 @@ public class MyAdapter extends PagerAdapter implements IconPagerAdapter {
                 mCameraManager.switchCamera();
             }
         });
-        return button;
+        return button;*/
+        return null;
     }
 }

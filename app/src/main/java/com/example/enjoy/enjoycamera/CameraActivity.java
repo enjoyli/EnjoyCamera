@@ -9,17 +9,18 @@ import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.example.enjoy.enjoycamera.Utils.CameraManager;
 import com.example.enjoy.enjoycamera.Utils.CustomView;
 import com.viewpagerindicator.TabPageIndicator;
 
-public class CameraActivity extends Activity {
+public class CameraActivity extends Activity implements View.OnClickListener{
     private static final String TAG = "CameraActivity";
-    private Button mTakePictureBtn = null;
-    private Button mSettings = null;
+    private ImageView mIvThumbnail = null;
+    private ImageView mIvCapture = null;
+    private ImageView mIvSwitch = null;
     private SharedPreferences preference;
     private CustomView mGridLine;
     private CameraManager mCameraManager = null;
@@ -30,6 +31,37 @@ public class CameraActivity extends Activity {
     private static final int CAMERA_MODE_VIDEO = 2;
     private static final int CAMERA_MODE_PHOTO = 3;
     private static final int CAMERA_MODE_SETTINGS = 9;
+    private int mMode = 3;
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.iv_thumbnail:
+                break;
+            case R.id.iv_capture:
+                if(mMode == CAMERA_MODE_PHOTO){
+                    takePicture();
+                }
+                break;
+            case R.id.iv_switch:
+                mCameraManager.switchCamera();
+                break;
+                default:
+                    break;
+        }
+    }
+
+    private void takePicture(){
+        boolean enable = preference.getBoolean("switch_preference_shutter_sound",false);
+        Log.d(TAG,"enable = "+enable);
+        mPhotoMode.setPictureSize((double)16/9);
+        mPhotoMode.takePicture(enable);
+    }
+
+    private void takeVideo(){
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,24 +100,10 @@ public class CameraActivity extends Activity {
         preview.addView(mCameraPreview);
         mGridLine = new CustomView(this);
         addContentView(mGridLine,new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
-        mSettings = findViewById(R.id.btn_settings);
-        mSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                gotoSetting();
-            }
-        });
-        mTakePictureBtn = findViewById(R.id.btn_takePicture);
-        mTakePictureBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean enable = preference.getBoolean("switch_preference_shutter_sound",false);
-                Log.d(TAG,"enable = "+enable);
-                mPhotoMode.setPictureSize((double)16/9);
-                mPhotoMode.takePicture(enable);
-            }
-        });
-
+        mIvCapture = findViewById(R.id.iv_capture);
+        mIvCapture.setOnClickListener(this);
+        mIvSwitch = findViewById(R.id.iv_switch);
+        mIvSwitch.setOnClickListener(this);
         ViewPager viewPager = findViewById(R.id.pager);
         MyAdapter myAdapter = new MyAdapter(CameraActivity.this,mCameraManager);
         viewPager.setAdapter(myAdapter);
@@ -102,6 +120,7 @@ public class CameraActivity extends Activity {
             @Override
             public void onPageSelected(int position) {
                 Log.d(TAG,"onPageSelected position ="+position);
+                mMode = position;
                 switch (position){
                     case CAMERA_MODE_PHOTO:
                         break;
