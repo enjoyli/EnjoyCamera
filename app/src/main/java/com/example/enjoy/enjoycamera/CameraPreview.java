@@ -2,6 +2,7 @@ package com.example.enjoy.enjoycamera;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -16,6 +17,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private CameraMode mCameraMode = null;
     private SurfaceHolder mHolder = null;
     private Camera.Parameters mParameters = null;
+    public static int sSurfaceViewW = 0;
+    public static int sSurfaceViewH = 0;
 
 
     public CameraPreview(Context context, CameraMode cameraMode) {
@@ -29,6 +32,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        Log.d(TAG,"surfaceCreated w ="+this.getWidth());
+        sSurfaceViewW = this.getWidth();
+        sSurfaceViewH = this.getHeight();
         mCameraMode.setPreviewSize((double)16/9);
         try {
             mCameraMode.getCamera().setPreviewDisplay(surfaceHolder);
@@ -43,6 +49,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         if(surfaceHolder.getSurface()==null){
             return;
         }
+        sSurfaceViewW = w;
+        sSurfaceViewH = h;
         mCameraMode.getCamera().stopPreview();
 
         try {

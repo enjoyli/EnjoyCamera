@@ -1,21 +1,24 @@
 package com.example.enjoy.enjoycamera;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.example.enjoy.enjoycamera.Utils.CameraManager;
 import com.example.enjoy.enjoycamera.Utils.CustomView;
+import com.example.enjoy.enjoycamera.Utils.FileUtils;
 import com.example.enjoy.enjoycamera.Utils.MessageEvent;
 import com.viewpagerindicator.TabPageIndicator;
 
@@ -35,6 +38,7 @@ public class CameraActivity extends Activity implements View.OnClickListener{
     private PhotoMode mPhotoMode = null;
     private CameraPreview mCameraPreview = null;
     private Camera mCamera = null;
+    private TabPageIndicator mTabPageIndicator;
     private static final int CAMERA_MODE_VIDEO = 2;
     private static final int CAMERA_MODE_PHOTO = 3;
     private static final int CAMERA_MODE_SETTINGS = 9;
@@ -45,19 +49,8 @@ public class CameraActivity extends Activity implements View.OnClickListener{
         String filePath = messageEvent.getMessage();
         int targetW = mIvThumbnail.getWidth();
         int targetH = mIvThumbnail.getHeight();
+        Bitmap bitmap = FileUtils.getBitmapFromFile(filePath,targetW,targetH);
 
-        Log.d(TAG,"w ="+targetW+" H ="+targetH);
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filePath,bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-        Bitmap bitmap = BitmapFactory.decodeFile(filePath,bmOptions);
         mIvThumbnail.setImageBitmap(bitmap);
     }
 
@@ -93,8 +86,10 @@ public class CameraActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
+                WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.camera_activity);
-
         init();
         initView();
     }
@@ -115,6 +110,7 @@ public class CameraActivity extends Activity implements View.OnClickListener{
     protected void onResume() {
         super.onResume();
         showOrHideGridLine();
+        mTabPageIndicator.onPageSelected(mMode);
     }
 
     private void showOrHideGridLine(){
@@ -138,6 +134,14 @@ public class CameraActivity extends Activity implements View.OnClickListener{
         mCameraManager = new CameraManager(mCameraPreview,mPhotoMode);
         FrameLayout preview = findViewById(R.id.fl_cameraPreview);
         preview.addView(mCameraPreview);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mCameraPreview.getLayoutParams();
+        WindowManager wm = (WindowManager)this.getSystemService(Context.WINDOW_SERVICE);
+        params.width = wm.getDefaultDisplay().getWidth();
+        float tempH = params.width * (float)(4.0/3.0);
+        params.height = (int)tempH;
+        Log.d(TAG,"params w ="+params.width+" H ="+params.height);
+        mCameraPreview.setLayoutParams(params);
+
         mGridLine = new CustomView(this);
         addContentView(mGridLine,new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT));
@@ -153,10 +157,10 @@ public class CameraActivity extends Activity implements View.OnClickListener{
         MyAdapter myAdapter = new MyAdapter(CameraActivity.this,mCameraManager);
         viewPager.setAdapter(myAdapter);
 
-        TabPageIndicator tabPageIndicator = findViewById(R.id.indicator);
-        tabPageIndicator.setViewPager(viewPager);
-        tabPageIndicator.onPageSelected(CAMERA_MODE_PHOTO);
-        tabPageIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mTabPageIndicator = findViewById(R.id.indicator);
+        mTabPageIndicator.setViewPager(viewPager);
+        mTabPageIndicator.onPageSelected(CAMERA_MODE_PHOTO);
+        mTabPageIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -165,7 +169,9 @@ public class CameraActivity extends Activity implements View.OnClickListener{
             @Override
             public void onPageSelected(int position) {
                 Log.d(TAG,"onPageSelected position ="+position);
-                mMode = position;
+                if(position != CAMERA_MODE_SETTINGS){
+                    mMode = position;
+                }
                 switch (position){
                     case CAMERA_MODE_PHOTO:
                         break;

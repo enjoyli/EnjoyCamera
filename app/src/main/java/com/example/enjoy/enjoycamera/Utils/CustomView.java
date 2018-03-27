@@ -4,14 +4,17 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
+
+import com.example.enjoy.enjoycamera.CameraPreview;
 
 /**
  * Created by libo on 2018/3/23.
  */
 
 public class CustomView extends View {
+    private static final String TAG = "CustomView";
     private int mLineX = 2;
     private int mLineY = 2;
     private int mWidth = 1920;
@@ -32,19 +35,21 @@ public class CustomView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        WindowManager wm = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
+/*        WindowManager wm = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
         mWidth = wm.getDefaultDisplay().getWidth();
-        mHeight = wm.getDefaultDisplay().getHeight();
-        setMeasuredDimension(mWidth,mHeight);
+        mHeight = wm.getDefaultDisplay().getHeight();*//*
+        setMeasuredDimension(mWidth,mHeight);*/
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         init();
+        mWidth = CameraPreview.sSurfaceViewW;
+        mHeight = CameraPreview.sSurfaceViewH;
         int x = mWidth/(mLineX+1);
         int y = mHeight/(mLineY+1);
-
+        Log.d(TAG,"on draw width = "+mWidth + "heigth = "+mHeight);
         for(int i =1; i<=mLineX;i++){
             canvas.drawLine(x * i, 0, x * i, mHeight, mPaint);
         }

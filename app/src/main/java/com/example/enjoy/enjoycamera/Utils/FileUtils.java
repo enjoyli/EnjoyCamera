@@ -1,5 +1,7 @@
 package com.example.enjoy.enjoycamera.Utils;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -13,6 +15,7 @@ import java.util.Date;
  */
 
 public class FileUtils {
+    private static final String TAG = "FileUtils";
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
@@ -45,5 +48,22 @@ public class FileUtils {
             return null;
         }
         return mediaFile;
+    }
+
+    public static Bitmap getBitmapFromFile(String filePath, int width, int height){
+        Log.d(TAG,"w ="+width+" H ="+height);
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath,bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        int scaleFactor = Math.min(photoW/width, photoH/height);
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(filePath,bmOptions);
+
+        return Bitmap.createScaledBitmap(bitmap,width,height,true);
     }
 }
