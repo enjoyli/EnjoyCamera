@@ -3,6 +3,8 @@ package com.example.enjoy.enjoycamera;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,7 +16,12 @@ import android.widget.ImageView;
 
 import com.example.enjoy.enjoycamera.Utils.CameraManager;
 import com.example.enjoy.enjoycamera.Utils.CustomView;
+import com.example.enjoy.enjoycamera.Utils.MessageEvent;
 import com.viewpagerindicator.TabPageIndicator;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class CameraActivity extends Activity implements View.OnClickListener{
     private static final String TAG = "CameraActivity";
@@ -32,6 +39,27 @@ public class CameraActivity extends Activity implements View.OnClickListener{
     private static final int CAMERA_MODE_PHOTO = 3;
     private static final int CAMERA_MODE_SETTINGS = 9;
     private int mMode = 3;
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent messageEvent){
+        String filePath = messageEvent.getMessage();
+        int targetW = mIvThumbnail.getWidth();
+        int targetH = mIvThumbnail.getHeight();
+
+        Log.d(TAG,"w ="+targetW+" H ="+targetH);
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath,bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(filePath,bmOptions);
+        mIvThumbnail.setImageBitmap(bitmap);
+    }
 
     @Override
     public void onClick(View view) {
@@ -72,6 +100,18 @@ public class CameraActivity extends Activity implements View.OnClickListener{
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         showOrHideGridLine();
@@ -99,11 +139,16 @@ public class CameraActivity extends Activity implements View.OnClickListener{
         FrameLayout preview = findViewById(R.id.fl_cameraPreview);
         preview.addView(mCameraPreview);
         mGridLine = new CustomView(this);
-        addContentView(mGridLine,new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+        addContentView(mGridLine,new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT));
+
         mIvCapture = findViewById(R.id.iv_capture);
         mIvCapture.setOnClickListener(this);
         mIvSwitch = findViewById(R.id.iv_switch);
         mIvSwitch.setOnClickListener(this);
+        mIvThumbnail = findViewById(R.id.iv_thumbnail);
+        mIvThumbnail.setOnClickListener(this);
+
         ViewPager viewPager = findViewById(R.id.pager);
         MyAdapter myAdapter = new MyAdapter(CameraActivity.this,mCameraManager);
         viewPager.setAdapter(myAdapter);

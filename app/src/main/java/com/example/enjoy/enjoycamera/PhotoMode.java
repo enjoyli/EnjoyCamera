@@ -3,6 +3,9 @@ package com.example.enjoy.enjoycamera;
 import android.hardware.Camera;
 
 import com.example.enjoy.enjoycamera.Utils.FileUtils;
+import com.example.enjoy.enjoycamera.Utils.MessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,10 +36,12 @@ public class PhotoMode extends CameraMode{
             if (pictureFile == null) {
                 return;
             }
+            String filePath = pictureFile.getAbsolutePath();
             try {
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 fos.write(bytes);
                 fos.close();
+                EventBus.getDefault().post(new MessageEvent(filePath));
                 mCamera.startPreview();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
