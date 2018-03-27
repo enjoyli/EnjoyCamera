@@ -65,4 +65,18 @@ public class CameraManager {
         }
     }
 
+    public void autoFocus(){
+        Camera.Parameters parameters = mCamera.getParameters();
+        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        mCamera.setParameters(parameters);
+        mCamera.autoFocus(new Camera.AutoFocusCallback() {
+            @Override
+            public void onAutoFocus(boolean success, Camera camera) {
+                if(success){
+
+                }
+            }
+        });
+    }
+
 }

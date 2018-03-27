@@ -57,6 +57,7 @@ public class CameraMode {
         Camera.Size previewSize = getOptimalSize("Preview",targetRatio);
         Log.d(TAG,"preview H ="+previewSize.height+" preview W ="+previewSize.width);
         mParameters.setPreviewSize(previewSize.width,previewSize.height);
+        mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         mCamera.setParameters(mParameters);
     }
 }

@@ -67,6 +67,10 @@ public class CameraActivity extends Activity implements View.OnClickListener{
             case R.id.iv_switch:
                 mCameraManager.switchCamera();
                 break;
+            case R.id.fl_cameraPreview:
+                Log.d(TAG,"click camera");
+                mCameraManager.autoFocus();
+                break;
                 default:
                     break;
         }
@@ -133,6 +137,7 @@ public class CameraActivity extends Activity implements View.OnClickListener{
         mVideoMode = new VideoMode(mCamera,mCameraPreview);
         mCameraManager = new CameraManager(mCameraPreview,mPhotoMode);
         FrameLayout preview = findViewById(R.id.fl_cameraPreview);
+        preview.setOnClickListener(this);
         preview.addView(mCameraPreview);
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mCameraPreview.getLayoutParams();
         WindowManager wm = (WindowManager)this.getSystemService(Context.WINDOW_SERVICE);
