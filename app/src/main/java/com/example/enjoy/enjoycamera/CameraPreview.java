@@ -5,8 +5,6 @@ import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.example.enjoy.enjoycamera.Utils.CameraManager;
-
 import java.io.IOException;
 
 /**
@@ -15,17 +13,15 @@ import java.io.IOException;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private static final String  TAG = "CameraPreview";
-    private Camera mCamera = null;
-    private CameraManager mCameraManager = null;
+    private CameraMode mCameraMode = null;
     private SurfaceHolder mHolder = null;
     private Camera.Parameters mParameters = null;
 
 
-    public CameraPreview(Context context, Camera camera, CameraManager cameraManager) {
+    public CameraPreview(Context context, CameraMode cameraMode) {
         super(context);
-        this.mCamera = camera;
-        mCameraManager = cameraManager;
-        mParameters = mCamera.getParameters();
+        mCameraMode = cameraMode;
+        mParameters = mCameraMode.getCamera().getParameters();
         mHolder = getHolder();
         mHolder.addCallback(this);
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -33,10 +29,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        mCameraManager.setPreviewSize((double)16/9);
+        mCameraMode.setPreviewSize((double)16/9);
         try {
-            mCamera.setPreviewDisplay(surfaceHolder);
-            mCamera.startPreview();
+            mCameraMode.getCamera().setPreviewDisplay(surfaceHolder);
+            mCameraMode.getCamera().startPreview();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,12 +43,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         if(surfaceHolder.getSurface()==null){
             return;
         }
-        mCamera.stopPreview();
+        mCameraMode.getCamera().stopPreview();
 
         try {
-            mCamera.setPreviewDisplay(mHolder);
-            mCamera.setDisplayOrientation(90);
-            mCamera.startPreview();
+            mCameraMode.getCamera().setPreviewDisplay(mHolder);
+            mCameraMode.getCamera().setDisplayOrientation(90);
+            mCameraMode.getCamera().startPreview();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -60,8 +56,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        if(mCamera!=null){
-            mCamera.stopPreview();
+        if(mCameraMode.getCamera()!=null){
+            mCameraMode.getCamera().stopPreview();
         }
     }
 

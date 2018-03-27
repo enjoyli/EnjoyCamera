@@ -12,14 +12,13 @@ import java.io.IOException;
  * Created by libo on 2018/3/26.
  */
 
-public class VideoMode {
+public class VideoMode extends CameraMode{
     private MediaRecorder mMediaRecorder = null;
     private boolean isRecording = false;
-    private Camera mCamera = null;
     private CameraPreview mCameraPreview = null;
 
     public VideoMode(Camera camera, CameraPreview cameraPreview) {
-        this.mCamera = camera;
+        super(camera);
         this.mCameraPreview = cameraPreview;
     }
 

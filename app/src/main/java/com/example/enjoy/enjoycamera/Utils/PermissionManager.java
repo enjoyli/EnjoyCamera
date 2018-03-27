@@ -27,6 +27,7 @@ public class PermissionManager {
     private void initPermissionsList(){
         mPermissionsList.add(Manifest.permission.CAMERA);
         mPermissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        mPermissionsList.add(Manifest.permission.RECORD_AUDIO);
     }
 
     private List<String> getNeedCheckPermissionList(List<String> permissionsList){

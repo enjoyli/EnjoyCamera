@@ -1,9 +1,11 @@
 package com.example.enjoy.enjoycamera.Utils;
 
 import android.hardware.Camera;
-import android.util.Log;
 
-import java.util.List;
+import com.example.enjoy.enjoycamera.CameraMode;
+import com.example.enjoy.enjoycamera.CameraPreview;
+
+import java.io.IOException;
 
 /**
  * Created by admin on 2018/03/21   .
@@ -12,61 +14,55 @@ import java.util.List;
 public class CameraManager {
     private static final String TAG = "CameraManager";
     private static Camera mCamera = null;
-    private Camera.Parameters mParameters = null;
+    private static int mOpenCamId = Camera.CameraInfo.CAMERA_FACING_BACK;
+    private CameraPreview mCameraPreview = null;
+    private CameraMode mCameraMode = null;
 
     public CameraManager() {
     }
 
+    public CameraManager(CameraPreview cameraPreview, CameraMode cameraMode) {
+        this.mCameraPreview = cameraPreview;
+        this.mCameraMode = cameraMode;
+    }
 
     public static Camera getCameraInstance(){
         if (mCamera == null){
             mCamera = Camera.open();
+            mOpenCamId = Camera.CameraInfo.CAMERA_FACING_BACK;
         }
         return mCamera;
     }
+    private boolean safeCameraOpen(int cameraId){
+        boolean qOpened = false;
+        mCamera = Camera.open(cameraId);
+        mCameraMode.setCamera(mCamera);
+        qOpened = (mCamera!=null);
+        return qOpened;
+    }
 
-    public Camera.Size getOptimalSize(String type,double targetRatio){
-        final double ASPECT_TOLERANCE = 0.1;
-        double minDiff = 0.1;
-        int targetHeight = 0;
-        Camera.Size optimalSize =null;
-        List<Camera.Size> sizeList = null;
-
-        mParameters = mCamera.getParameters();
-        if (type == "Picture"){
-            sizeList = mParameters.getSupportedPictureSizes();
-        }else {
-            sizeList = mParameters.getSupportedPreviewSizes();
+    private void releaseCameraAndPreview(){
+        if(mCamera!=null){
+            mCamera.release();
+            mCamera = null;
         }
-        for(Camera.Size size : sizeList){
-            double ratio = (double)size.width/size.height;
-            Log.d(TAG,"size w ="+size.width+" size h ="+size.height);
-            if(Math.abs(targetRatio - ratio) > ASPECT_TOLERANCE){
-                continue;
-            }
+    }
 
-            if(Math.abs(targetHeight - size.height) > minDiff){
-                optimalSize = size;
-                minDiff = Math.abs(targetHeight - size.height);
-            }
+    public void switchCamera(){
+        releaseCameraAndPreview();
+        if(mOpenCamId == Camera.CameraInfo.CAMERA_FACING_BACK){
+            mOpenCamId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+        }else{
+            mOpenCamId = Camera.CameraInfo.CAMERA_FACING_BACK;
         }
-        return optimalSize;
+        safeCameraOpen(mOpenCamId);
+        try {
+            mCamera.setPreviewDisplay(mCameraPreview.getHolder());
+            mCamera.setDisplayOrientation(90);
+            mCamera.startPreview();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void setPreviewSize(double targetRatio){
-        Camera.Size previewSize = getOptimalSize("Preview",targetRatio);
-        Log.d(TAG,"preview H ="+previewSize.height+" preview W ="+previewSize.width);
-        mParameters.setPreviewSize(previewSize.width,previewSize.height);
-        mCamera.setParameters(mParameters);
-    }
-
-    public void setPictureSize(double targetRatio){
-        mParameters = mCamera.getParameters();
-        Camera.Size pictureSize = getOptimalSize("Picture",targetRatio);
-
-        mParameters.setPictureSize(pictureSize.width,pictureSize.height);
-        mParameters.set("rotation", 90);
-
-        mCamera.setParameters(mParameters);
-    }
 }

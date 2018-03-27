@@ -25,3 +25,7 @@ runtime permission
 #Day 6
 
 使用ViewPagerIndicator
+
+#Day 7
+
+添加cameraMode
