@@ -29,3 +29,7 @@ runtime permission
 #Day 7
 
 添加cameraMode,添加eventbus 更新缩略图，适配4：3屏幕
+
+#Day 8
+
+添加face detection

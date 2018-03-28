@@ -79,4 +79,10 @@ public class CameraManager {
         });
     }
 
+    public void startFaceDetection(){
+        Camera.Parameters parameters = mCamera.getParameters();
+        if(parameters.getMaxNumDetectedFaces() > 0){
+            mCamera.startFaceDetection();
+        }
+    }
 }

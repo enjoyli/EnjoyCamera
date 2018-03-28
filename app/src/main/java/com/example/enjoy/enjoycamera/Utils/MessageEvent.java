@@ -7,6 +7,7 @@ package com.example.enjoy.enjoycamera.Utils;
 public class MessageEvent {
     private String mMessage;
 
+
     public MessageEvent(String message) {
         this.mMessage = message;
     }

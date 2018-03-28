@@ -18,6 +18,8 @@ import android.widget.ImageView;
 
 import com.example.enjoy.enjoycamera.Utils.CameraManager;
 import com.example.enjoy.enjoycamera.Utils.CustomView;
+import com.example.enjoy.enjoycamera.Utils.FaceEvent;
+import com.example.enjoy.enjoycamera.Utils.FaceView;
 import com.example.enjoy.enjoycamera.Utils.FileUtils;
 import com.example.enjoy.enjoycamera.Utils.MessageEvent;
 import com.viewpagerindicator.TabPageIndicator;
@@ -39,6 +41,7 @@ public class CameraActivity extends Activity implements View.OnClickListener{
     private CameraPreview mCameraPreview = null;
     private Camera mCamera = null;
     private TabPageIndicator mTabPageIndicator;
+    private FaceView mFaceView;
     private static final int CAMERA_MODE_VIDEO = 2;
     private static final int CAMERA_MODE_PHOTO = 3;
     private static final int CAMERA_MODE_SETTINGS = 9;
@@ -46,12 +49,20 @@ public class CameraActivity extends Activity implements View.OnClickListener{
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent messageEvent){
+        Log.d(TAG,"onMessageEvent");
         String filePath = messageEvent.getMessage();
         int targetW = mIvThumbnail.getWidth();
         int targetH = mIvThumbnail.getHeight();
         Bitmap bitmap = FileUtils.getBitmapFromFile(filePath,targetW,targetH);
 
         mIvThumbnail.setImageBitmap(bitmap);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFaceEvent(FaceEvent faceEvent){
+        Log.d(TAG,"onFaceEvent");
+        Camera.Face[] faces = faceEvent.getFaces();
+        mFaceView.setFace(faces);
     }
 
     @Override
@@ -79,7 +90,7 @@ public class CameraActivity extends Activity implements View.OnClickListener{
     private void takePicture(){
         boolean enable = preference.getBoolean("switch_preference_shutter_sound",false);
         Log.d(TAG,"enable = "+enable);
-        mPhotoMode.setPictureSize((double)16/9);
+        mPhotoMode.setPictureSize((double)4/3);
         mPhotoMode.takePicture(enable);
     }
 
@@ -146,7 +157,9 @@ public class CameraActivity extends Activity implements View.OnClickListener{
         params.height = (int)tempH;
         Log.d(TAG,"params w ="+params.width+" H ="+params.height);
         mCameraPreview.setLayoutParams(params);
-
+        mFaceView = new FaceView(this);
+        addContentView(mFaceView,new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT));
         mGridLine = new CustomView(this);
         addContentView(mGridLine,new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT));

@@ -35,10 +35,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Log.d(TAG,"surfaceCreated w ="+this.getWidth());
         sSurfaceViewW = this.getWidth();
         sSurfaceViewH = this.getHeight();
-        mCameraMode.setPreviewSize((double)16/9);
+        mCameraMode.setPreviewSize((double)4/3);
         try {
             mCameraMode.getCamera().setPreviewDisplay(surfaceHolder);
             mCameraMode.getCamera().startPreview();
+            mCameraMode.getCamera().startFaceDetection();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,6 +58,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCameraMode.getCamera().setPreviewDisplay(mHolder);
             mCameraMode.getCamera().setDisplayOrientation(90);
             mCameraMode.getCamera().startPreview();
+            mCameraMode.getCamera().startFaceDetection();
         } catch (IOException e) {
             e.printStackTrace();
         }

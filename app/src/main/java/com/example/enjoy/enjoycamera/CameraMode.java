@@ -3,6 +3,10 @@ package com.example.enjoy.enjoycamera;
 import android.hardware.Camera;
 import android.util.Log;
 
+import com.example.enjoy.enjoycamera.Utils.FaceEvent;
+
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 /**
@@ -16,7 +20,17 @@ public class CameraMode {
     public CameraMode(Camera camera) {
         this.mCamera = camera;
     }
-
+    private Camera.FaceDetectionListener mFaceDetectionListener = new Camera.FaceDetectionListener() {
+        @Override
+        public void onFaceDetection(Camera.Face[] faces, Camera camera) {
+            Log.d(TAG,"faces.length ="+ faces.length);
+            if(faces.length > 0 ){
+                EventBus.getDefault().post(new FaceEvent(faces));
+            }else{
+                EventBus.getDefault().post(new FaceEvent(null));
+            }
+        }
+    };
     public Camera getCamera() {
         return mCamera;
     }
@@ -57,7 +71,11 @@ public class CameraMode {
         Camera.Size previewSize = getOptimalSize("Preview",targetRatio);
         Log.d(TAG,"preview H ="+previewSize.height+" preview W ="+previewSize.width);
         mParameters.setPreviewSize(previewSize.width,previewSize.height);
-        mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        List<String> focusModes = mParameters.getSupportedFocusModes();
+        if(focusModes.contains(Camera.Parameters.FLASH_MODE_AUTO)){
+            mParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        }
+        mCamera.setFaceDetectionListener(mFaceDetectionListener);
         mCamera.setParameters(mParameters);
     }
 }
