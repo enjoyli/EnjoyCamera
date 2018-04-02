@@ -1,7 +1,6 @@
 package com.example.enjoy.enjoycamera;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -143,20 +142,12 @@ public class CameraActivity extends Activity implements View.OnClickListener{
 
     private void initView(){
         Log.d(TAG,"initView");
-        mPhotoMode = new PhotoMode(mCamera);
-        mCameraPreview = new CameraPreview(this,mPhotoMode);
-        mVideoMode = new VideoMode(mCamera,mCameraPreview);
-        mCameraManager = new CameraManager(mCameraPreview,mPhotoMode);
+        //mVideoMode = new VideoMode(mCamera,mCameraPreview);
         FrameLayout preview = findViewById(R.id.fl_cameraPreview);
         preview.setOnClickListener(this);
-        preview.addView(mCameraPreview);
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mCameraPreview.getLayoutParams();
-        WindowManager wm = (WindowManager)this.getSystemService(Context.WINDOW_SERVICE);
-        params.width = wm.getDefaultDisplay().getWidth();
-        float tempH = params.width * (float)(4.0/3.0);
-        params.height = (int)tempH;
-        Log.d(TAG,"params w ="+params.width+" H ="+params.height);
-        mCameraPreview.setLayoutParams(params);
+        mPhotoMode = new PhotoMode(this,mCamera,preview);
+        mPhotoMode.init();
+        mCameraManager = new CameraManager(mPhotoMode.getHolder(),mPhotoMode);
         mFaceView = new FaceView(this);
         addContentView(mFaceView,new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT));

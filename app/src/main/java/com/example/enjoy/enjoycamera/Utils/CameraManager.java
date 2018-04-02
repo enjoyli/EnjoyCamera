@@ -1,9 +1,9 @@
 package com.example.enjoy.enjoycamera.Utils;
 
 import android.hardware.Camera;
+import android.view.SurfaceHolder;
 
 import com.example.enjoy.enjoycamera.CameraMode;
-import com.example.enjoy.enjoycamera.CameraPreview;
 
 import java.io.IOException;
 
@@ -15,14 +15,14 @@ public class CameraManager {
     private static final String TAG = "CameraManager";
     private static Camera mCamera = null;
     private static int mOpenCamId = Camera.CameraInfo.CAMERA_FACING_BACK;
-    private CameraPreview mCameraPreview = null;
+    private SurfaceHolder mSurfaceHolder = null;
     private CameraMode mCameraMode = null;
 
     public CameraManager() {
     }
 
-    public CameraManager(CameraPreview cameraPreview, CameraMode cameraMode) {
-        this.mCameraPreview = cameraPreview;
+    public CameraManager(SurfaceHolder surfaceHolder, CameraMode cameraMode) {
+        this.mSurfaceHolder = surfaceHolder;
         this.mCameraMode = cameraMode;
     }
 
@@ -57,7 +57,7 @@ public class CameraManager {
         }
         safeCameraOpen(mOpenCamId);
         try {
-            mCamera.setPreviewDisplay(mCameraPreview.getHolder());
+            mCamera.setPreviewDisplay(mSurfaceHolder);
             mCamera.setDisplayOrientation(90);
             mCamera.startPreview();
         } catch (IOException e) {
