@@ -38,6 +38,7 @@ public class CameraActivity extends Activity implements View.OnClickListener{
     private VideoMode mVideoMode = null;
     private PhotoMode mPhotoMode = null;
     private CameraPreview mCameraPreview = null;
+    private FrameLayout mPreview = null;
     private Camera mCamera = null;
     private TabPageIndicator mTabPageIndicator;
     private FaceView mFaceView;
@@ -72,6 +73,8 @@ public class CameraActivity extends Activity implements View.OnClickListener{
             case R.id.iv_capture:
                 if(mMode == CAMERA_MODE_PHOTO){
                     takePicture();
+                }else if(mMode == CAMERA_MODE_VIDEO){
+                    takeVideo();
                 }
                 break;
             case R.id.iv_switch:
@@ -143,9 +146,9 @@ public class CameraActivity extends Activity implements View.OnClickListener{
     private void initView(){
         Log.d(TAG,"initView");
         //mVideoMode = new VideoMode(mCamera,mCameraPreview);
-        FrameLayout preview = findViewById(R.id.fl_cameraPreview);
-        preview.setOnClickListener(this);
-        mPhotoMode = new PhotoMode(this,mCamera,preview);
+        mPreview = findViewById(R.id.fl_cameraPreview);
+        mPreview.setOnClickListener(this);
+        mPhotoMode = new PhotoMode(this,mCamera,mPreview);
         mPhotoMode.init();
         mCameraManager = new CameraManager(mPhotoMode.getHolder(),mPhotoMode);
         mFaceView = new FaceView(this);
@@ -181,10 +184,17 @@ public class CameraActivity extends Activity implements View.OnClickListener{
                 if(position != CAMERA_MODE_SETTINGS){
                     mMode = position;
                 }
+                mPreview.removeAllViews();
                 switch (position){
                     case CAMERA_MODE_PHOTO:
+                        mVideoMode = null;
+                        mPhotoMode = new PhotoMode(getApplicationContext(),mCamera,mPreview);
+                        mPhotoMode.init();
                         break;
                     case CAMERA_MODE_VIDEO:
+                        mPhotoMode = null;
+                        mVideoMode = new VideoMode(getApplicationContext(),mCamera,mPreview);
+                        mVideoMode.init();
                         break;
                     case CAMERA_MODE_SETTINGS:
                         gotoSetting();
