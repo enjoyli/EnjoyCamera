@@ -7,7 +7,8 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -26,6 +27,9 @@ import com.viewpagerindicator.TabPageIndicator;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CameraActivity extends Activity implements View.OnClickListener{
     private static final String TAG = "CameraActivity";
@@ -46,7 +50,7 @@ public class CameraActivity extends Activity implements View.OnClickListener{
     private static final int CAMERA_MODE_PHOTO = 3;
     private static final int CAMERA_MODE_SETTINGS = 9;
     private int mMode = 3;
-
+    private List<ModeItem> modeList = new ArrayList<>();
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent messageEvent){
         Log.d(TAG,"onMessageEvent");
@@ -127,7 +131,7 @@ public class CameraActivity extends Activity implements View.OnClickListener{
     protected void onResume() {
         super.onResume();
         showOrHideGridLine();
-        mTabPageIndicator.onPageSelected(mMode);
+        //mTabPageIndicator.onPageSelected(mMode);
     }
 
     private void showOrHideGridLine(){
@@ -165,7 +169,14 @@ public class CameraActivity extends Activity implements View.OnClickListener{
         mIvThumbnail = findViewById(R.id.iv_thumbnail);
         mIvThumbnail.setOnClickListener(this);
 
-        ViewPager viewPager = findViewById(R.id.pager);
+        initMode();
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView.setLayoutManager(layoutManager);
+        ModeAdapter adapter = new ModeAdapter(modeList);
+        recyclerView.setAdapter(adapter);
+       /* ViewPager viewPager = findViewById(R.id.pager);
         MyAdapter myAdapter = new MyAdapter(CameraActivity.this,mCameraManager);
         viewPager.setAdapter(myAdapter);
 
@@ -208,9 +219,40 @@ public class CameraActivity extends Activity implements View.OnClickListener{
             public void onPageScrollStateChanged(int state) {
 
             }
-        });
+        });*/
     }
+    private void initMode(){
+        ModeItem delayRec = new ModeItem("延时录像",R.mipmap.ic_launcher);
+        modeList.add(delayRec);
 
+        ModeItem slowRec = new ModeItem("慢动作录像",R.mipmap.ic_launcher);
+        modeList.add(slowRec);
+
+        ModeItem rec = new ModeItem("录像",R.mipmap.ic_launcher);
+        modeList.add(rec);
+
+        ModeItem takePhoto = new ModeItem("拍照",R.mipmap.ic_launcher);
+        modeList.add(takePhoto);
+
+        ModeItem blur = new ModeItem("背景虚化",R.mipmap.ic_launcher);
+        modeList.add(blur);
+
+        ModeItem panora = new ModeItem("全景",R.mipmap.ic_launcher);
+        modeList.add(panora);
+
+        ModeItem profession = new ModeItem("专业相机",R.mipmap.ic_launcher);
+        modeList.add(profession);
+
+        ModeItem scan = new ModeItem("扫描",R.mipmap.ic_launcher);
+        modeList.add(scan);
+
+        ModeItem scanCard = new ModeItem("扫名片",R.mipmap.ic_launcher);
+        modeList.add(scanCard);
+
+        ModeItem settings = new ModeItem("更多设置",R.mipmap.ic_launcher);
+        modeList.add(settings);
+
+    }
     private void gotoSetting(){
         Intent intent = new Intent(this,SettingActivity.class);
         startActivity(intent);
