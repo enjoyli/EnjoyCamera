@@ -8,14 +8,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.example.enjoy.enjoycamera.Utils.FileUtils;
-import com.example.enjoy.enjoycamera.Utils.MessageEvent;
+import com.example.enjoy.enjoycamera.Utils.ImageSaveTask;
 
-import org.greenrobot.eventbus.EventBus;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -89,23 +83,9 @@ public class PhotoMode extends CameraMode implements PhotoController{
     private Camera.PictureCallback mPicture = new Camera.PictureCallback(){
         @Override
         public void onPictureTaken(byte[] bytes, Camera camera) {
-            File pictureFile = FileUtils.getOutputMediaFile(FileUtils.MEDIA_TYPE_IMAGE);
-            if (pictureFile == null) {
-                return;
-            }
-            String filePath = pictureFile.getAbsolutePath();
-            try {
-                FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(bytes);
-                fos.close();
-                EventBus.getDefault().post(new MessageEvent(filePath));
-                mCamera.startPreview();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            ImageSaveTask imageSaveTask = new ImageSaveTask(bytes);
+            imageSaveTask.execute();
+            mCamera.startPreview();
         }
     };
 
